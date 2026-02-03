@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Chess</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="board-container">
+            <div id="chess-board" class="chess-board"></div>
+        </div>
+        
+        <div class="info-panel">
+            <h1>CHESS</h1>
+            
+            <div class="status-box">
+                <div class="current-turn">
+                    <span id="turn-indicator" class="turn-white"></span>
+                    <span id="status">White's Turn</span>
+                </div>
+            </div>
+
+            <div class="captured-pieces">
+                <div class="captured-row" style="color:white">
+                     Captured: <span id="white-captured"></span>
+                </div>
+                <div class="captured-row" style="color:black; text-shadow: 0 0 2px white;">
+                     Captured: <span id="black-captured"></span>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button id="reset-btn">New Game</button>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,228 @@
+:root {
+    --bg-color: #1a1a1a;
+    --board-dark: #779556;
+    --board-light: #ebecd0;
+    --board-dark-highlight: #baca44;
+    --board-light-highlight: #f6f669;
+    --text-color: #e0e0e0;
+    --panel-bg: rgba(255, 255, 255, 0.05);
+    --accent-color: #4CAF50;
+    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-family);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+.game-container {
+    display: flex;
+    gap: 2rem;
+    padding: 2rem;
+    background: var(--panel-bg);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.board-container {
+    position: relative;
+    width: 600px;
+    height: 600px;
+    user-select: none;
+}
+
+.chess-board {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.square {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.square.light {
+    background-color: var(--board-light);
+    color: black;
+}
+
+.square.dark {
+    background-color: var(--board-dark);
+    color: black;
+}
+
+.square.selected {
+    background-color: rgba(255, 255, 0, 0.5) !important;
+}
+
+.square.valid-move::after {
+    content: '';
+    width: 20px;
+    height: 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+}
+
+.square.capture::after {
+    content: '';
+    width: 60px;
+    height: 60px;
+    border: 6px solid rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    background: transparent;
+}
+
+.piece {
+    cursor: grab;
+    transition: transform 0.2s ease-out;
+}
+
+.piece:active {
+    cursor: grabbing;
+}
+
+/* Info Panel */
+.info-panel {
+    width: 300px;
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+h1 {
+    margin: 0;
+    font-size: 2rem;
+    text-align: center;
+    color: var(--accent-color);
+    letter-spacing: 2px;
+}
+
+.status-box {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.current-turn {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.turn-indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.turn-white { background: #fff; border: 1px solid #000; }
+.turn-black { background: #000; border: 1px solid #fff; }
+
+.captured-pieces {
+    flex-grow: 1;
+    background: rgba(0,0,0,0.1);
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.captured-row {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+button {
+    background: var(--accent-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: transform 0.1s, background 0.2s;
+}
+
+button:hover {
+    background: #43a047;
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* Animations */
+@keyframes popIn {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.piece-anim {
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Responsive */
+@media (max-width: 1000px) {
+    .game-container {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        height: 100vh;
+        overflow-y: auto;
+        padding: 1rem 0;
+    }
+
+    .board-container {
+        width: 90vw;
+        height: 90vw;
+        max-width: 500px;
+        max-height: 500px;
+    }
+
+    .info-panel {
+        width: 90vw;
+        max-width: 500px;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    
+    .status-box, .captured-pieces {
+        flex: 1;
+    }
+}
