@@ -731,15 +731,13 @@
             }
         }
 
-        margin-top: 10px;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        justify-content: center;
-        width: fit-content;
-        margin-left: auto;
-        margin-right: auto;
+        .controls-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+            width: 100%;
         }
 
         .hint-btn:hover {
@@ -1228,12 +1226,14 @@
                     <div id="thinking" class="thinking">
                         <div class="loader"></div><span>AI is calculating...</span>
                     </div>
-                    <button id="hint-btn" class="hint-btn">
-                        <span>💡</span> Get Hint
-                    </button>
-                    <button id="undo-btn" class="hint-btn" style="margin-top: 10px;">
-                        <span>↩️</span> Undo Move
-                    </button>
+                    <div class="controls-group">
+                        <button id="hint-btn" class="hint-btn">
+                            <span>💡</span> Get Hint
+                        </button>
+                        <button id="undo-btn" class="hint-btn">
+                            <span>↩️</span> Undo Move
+                        </button>
+                    </div>
                     <div id="game-quote" class="quote-container"></div>
                     <div id="restart-countdown"
                         style="display: none; margin-top: 10px; text-align: center; color: var(--gold); font-size: 0.9rem;">
@@ -1292,7 +1292,8 @@
             <button id="send-feedback" class="feedback-send-btn">Send Now</button>
         </div>
         <div style="text-align: center; margin-bottom: 5px;">
-            <span style="font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; color: var(--gold); text-transform: uppercase; opacity: 0.8; text-shadow: 0 0 5px rgba(212, 175, 55, 0.5);">Feedback</span>
+            <span
+                style="font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; color: var(--gold); text-transform: uppercase; opacity: 0.8; text-shadow: 0 0 5px rgba(212, 175, 55, 0.5);">Feedback</span>
         </div>
         <button id="feedback-btn" class="feedback-btn" title="Send Feedback">
             <span>📫</span>
