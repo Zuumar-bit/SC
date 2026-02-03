@@ -11,6 +11,13 @@
         href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Outfit:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function () {
+            // Replace with your Public Key from EmailJS
+            emailjs.init("PadHKmkFdaYlsUVWd");
+        })();
+    </script>
     <style>
         :root {
             --gold: #d4af37;
@@ -214,11 +221,26 @@
             color: var(--gold);
             opacity: 0;
             font-family: 'Cinzel', serif;
-            filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.4));
             animation: drift var(--duration) linear infinite;
             animation-delay: var(--delay);
             user-select: none;
             pointer-events: none;
+            transition: filter 0.3s ease;
+        }
+
+        .particle.gold {
+            color: #ffd700;
+            filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6)) drop-shadow(0 0 15px rgba(255, 215, 0, 0.3));
+        }
+
+        .particle.diamond {
+            color: #b9f2ff;
+            filter: drop-shadow(0 0 8px rgba(185, 242, 255, 0.7)) drop-shadow(0 0 20px rgba(185, 242, 255, 0.4));
+        }
+
+        .particle.chess {
+            color: var(--gold);
+            filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.4));
         }
 
         @keyframes drift {
@@ -598,15 +620,126 @@
             border-radius: 20px;
             font-size: 0.8rem;
             cursor: pointer;
-            margin-top: 10px;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
+            font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 5px;
             justify-content: center;
-            width: fit-content;
-            margin-left: auto;
-            margin-right: auto;
+            gap: 8px;
+        }
+
+        /* Feedback Styles */
+        .feedback-container {
+            position: fixed;
+            bottom: 25px;
+            left: 25px;
+            z-index: 1000;
+        }
+
+        .feedback-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            border: none;
+            color: #000;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .feedback-btn:hover {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.6);
+        }
+
+        .feedback-modal {
+            position: absolute;
+            bottom: 65px;
+            left: 0;
+            width: 300px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--border-gold);
+            border-radius: 15px;
+            padding: 20px;
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.3s ease;
+        }
+
+        .feedback-modal.show {
+            display: flex;
+        }
+
+        .feedback-modal h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 1rem;
+            color: var(--gold);
+            margin-bottom: 5px;
+        }
+
+        .feedback-modal textarea {
+            width: 100%;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            border-radius: 8px;
+            padding: 10px;
+            color: #fff;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            resize: none;
+            outline: none;
+        }
+
+        .feedback-modal textarea:focus {
+            border-color: var(--gold);
+        }
+
+        .feedback-send-btn {
+            background: var(--gold);
+            color: #000;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .feedback-send-btn:hover {
+            background: var(--gold-light);
+            transform: translateY(-2px);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        margin-top: 10px;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        justify-content: center;
+        width: fit-content;
+        margin-left: auto;
+        margin-right: auto;
         }
 
         .hint-btn:hover {
@@ -1098,7 +1231,13 @@
                     <button id="hint-btn" class="hint-btn">
                         <span>💡</span> Get Hint
                     </button>
+                    <button id="undo-btn" class="hint-btn" style="margin-top: 10px;">
+                        <span>↩️</span> Undo Move
+                    </button>
                     <div id="game-quote" class="quote-container"></div>
+                    <div id="restart-countdown"
+                        style="display: none; margin-top: 10px; text-align: center; color: var(--gold); font-size: 0.9rem;">
+                    </div>
                 </div>
             </div>
         </div>
@@ -1144,6 +1283,20 @@
                 </button>
             </div>
         </div>
+    </div>
+
+    <div class="feedback-container">
+        <div id="feedback-modal" class="feedback-modal">
+            <h3>Send Feedback ✍️</h3>
+            <textarea id="feedback-text" placeholder="Type your feedback or suggestions here..."></textarea>
+            <button id="send-feedback" class="feedback-send-btn">Send Now</button>
+        </div>
+        <div style="text-align: center; margin-bottom: 5px;">
+            <span style="font-size: 0.65rem; font-weight: 700; letter-spacing: 1px; color: var(--gold); text-transform: uppercase; opacity: 0.8; text-shadow: 0 0 5px rgba(212, 175, 55, 0.5);">Feedback</span>
+        </div>
+        <button id="feedback-btn" class="feedback-btn" title="Send Feedback">
+            <span>📫</span>
+        </button>
     </div>
 
     <script>
@@ -1195,7 +1348,8 @@
             lastMove: null, vsBot: true, botThinking: false, gameOver: false, winner: null,
             score: { white: 0, black: 0 }, playerColor: 'w', difficulty: 'medium',
             streak: parseInt(localStorage.getItem('chess_streak') || '0'),
-            history: []
+            history: [],
+            snapshots: [] // Store previous states for undo
         };
 
         const boardEl = document.getElementById('chess-board');
@@ -1322,6 +1476,34 @@
             });
         });
         document.getElementById('reset-btn').addEventListener('click', resetGame);
+        document.getElementById('undo-btn').addEventListener('click', undoMove);
+
+        function undoMove() {
+            if (state.snapshots.length === 0 || state.botThinking || state.gameOver) return;
+
+            function popAndRestore() {
+                const snapshot = state.snapshots.pop();
+                state.board = snapshot.board;
+                state.turn = snapshot.turn;
+                state.captured = snapshot.captured;
+                state.lastMove = snapshot.lastMove;
+                state.history.pop();
+
+                // Update history UI
+                if (historyList.firstChild) historyList.removeChild(historyList.firstChild);
+            }
+
+            // In Bot mode, undoing usually means going back to before the player's move
+            // which involves undoing both the bot's move and the player's move.
+            if (state.vsBot && state.snapshots.length >= 2 && state.turn === state.playerColor) {
+                popAndRestore(); // Undo Bot
+                popAndRestore(); // Undo Player
+            } else {
+                popAndRestore();
+            }
+
+            updateUI();
+        }
 
         function switchToPvP() {
             state.vsBot = false;
@@ -1455,6 +1637,15 @@
             const captured = state.board[to.row][to.col];
 
             // Log History
+            // Save snapshot before move
+            state.snapshots.push({
+                board: JSON.parse(JSON.stringify(state.board)),
+                turn: state.turn,
+                captured: JSON.parse(JSON.stringify(state.captured)),
+                lastMove: state.lastMove ? JSON.parse(JSON.stringify(state.lastMove)) : null,
+                historyCount: state.history.length
+            });
+
             const notation = `${UNICODE[piece]} ${String.fromCharCode(97 + from.col)}${8 - from.row} → ${String.fromCharCode(97 + to.col)}${8 - to.row}`;
             state.history.push(notation);
             const historyItem = document.createElement('div');
@@ -1469,6 +1660,12 @@
                 playSound('capture');
                 state.captured[captured[0]].push(captured);
                 updateCapturedDisplay();
+
+                // CRITICAL: End game immediately if King is captured
+                if (captured[1] === 'k') {
+                    showGameOver(captured[0] === 'w' ? 'b' : 'w');
+                    return;
+                }
             } else {
                 playSound('move');
             }
@@ -1476,48 +1673,92 @@
             updateUI();
 
             const moves = getAllMoves(state.board, state.turn);
-            if (moves.length === 0) showGameOver();
-            else if (state.vsBot && state.turn !== state.playerColor) {
+            if (moves.length === 0) {
+                showGameOver();
+            } else if (state.vsBot && state.turn !== state.playerColor) {
                 thinkingEl.classList.add('show');
-                setTimeout(makeBotMove, 400);
+                setTimeout(makeBotMove, 250); // Faster AI response
             }
         }
 
-        function showGameOver() {
+        function showGameOver(winner) {
+            if (state.gameOver) return;
             state.gameOver = true;
-            const whiteMoves = getAllMoves(state.board, 'w');
-            const blackMoves = getAllMoves(state.board, 'b');
             let resultText = "";
+            let quote = "";
 
-            if (whiteMoves.length === 0) {
-                state.winner = 'b';
-                state.score.black++;
-                resultText = "Black Wins! (Checkmate)";
-                if (state.playerColor === 'b') {
-                    updateStreak(true);
-                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-                } else updateStreak(false);
-            } else if (blackMoves.length === 0) {
-                state.winner = 'w';
-                state.score.white++;
-                resultText = "White Wins! (Checkmate)";
-                if (state.playerColor === 'w') {
-                    updateStreak(true);
-                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-                } else updateStreak(false);
-            } else {
-                resultText = "Draw!";
-                updateStreak(false);
+            // If no winner passed, detect by moves
+            if (!winner) {
+                const whiteMoves = getAllMoves(state.board, 'w');
+                const blackMoves = getAllMoves(state.board, 'b');
+                if (whiteMoves.length === 0) winner = 'b';
+                else if (blackMoves.length === 0) winner = 'w';
+                else winner = 'draw';
             }
 
-            const quote = state.winner === state.playerColor ? WIN_QUOTES[Math.floor(Math.random() * WIN_QUOTES.length)] : LOSS_QUOTES[Math.floor(Math.random() * LOSS_QUOTES.length)];
+            if (winner === 'b') {
+                state.winner = 'b';
+                state.score.black++;
+                resultText = "🏆 Black Wins! 🏆";
+                if (state.vsBot && state.playerColor === 'b') {
+                    updateStreak(true);
+                    quote = WIN_QUOTES[Math.floor(Math.random() * WIN_QUOTES.length)];
+                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                } else if (state.vsBot && state.playerColor === 'w') {
+                    updateStreak(false);
+                    quote = LOSS_QUOTES[Math.floor(Math.random() * LOSS_QUOTES.length)];
+                } else {
+                    quote = "Black player claims victory!";
+                }
+            } else if (winner === 'w') {
+                state.winner = 'w';
+                state.score.white++;
+                resultText = "🏆 White Wins! 🏆";
+                if (state.vsBot && state.playerColor === 'w') {
+                    updateStreak(true);
+                    quote = WIN_QUOTES[Math.floor(Math.random() * WIN_QUOTES.length)];
+                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                } else if (state.vsBot && state.playerColor === 'b') {
+                    updateStreak(false);
+                    quote = LOSS_QUOTES[Math.floor(Math.random() * LOSS_QUOTES.length)];
+                } else {
+                    quote = "White player claims victory!";
+                }
+            } else {
+                resultText = "⚖️ Draw! ⚖️";
+                updateStreak(false);
+                quote = "A well-fought battle ends in a draw!";
+            }
 
+            // Display result and quote
             statusEl.textContent = resultText;
-            document.getElementById('game-quote').textContent = quote;
+            const quoteEl = document.getElementById('game-quote');
+            quoteEl.textContent = quote;
+            quoteEl.style.cssText = 'margin-top: 15px; padding: 15px; background: rgba(212, 175, 55, 0.1); border-left: 3px solid var(--gold); border-radius: 8px; font-style: italic; color: var(--gold); animation: fadeIn 0.5s ease;';
             updateScoreDisplay();
 
+            // Show countdown timer
+            const countdownEl = document.getElementById('restart-countdown');
+            if (countdownEl) {
+                countdownEl.style.display = 'block';
+                let countdown = 5;
+                countdownEl.textContent = `🔄 New game starting in ${countdown} seconds...`;
+
+                const countdownInterval = setInterval(() => {
+                    countdown--;
+                    if (countdown > 0) {
+                        if (countdownEl) countdownEl.textContent = `🔄 New game starting in ${countdown} seconds...`;
+                    } else {
+                        clearInterval(countdownInterval);
+                        if (countdownEl) countdownEl.style.display = 'none';
+                    }
+                }, 1000);
+            }
+
             // Auto Game Reset after 5 seconds
-            setTimeout(resetGame, 5000);
+            setTimeout(() => {
+                resetGame();
+            }, 5000);
         }
 
         function updateScoreDisplay() {
@@ -1689,6 +1930,7 @@
             state.gameOver = false; state.winner = null;
             state.botThinking = false;
             state.history = [];
+            state.snapshots = [];
             historyList.innerHTML = '';
             thinkingEl.classList.remove('show');
             document.getElementById('game-quote').textContent = '';
@@ -1704,21 +1946,95 @@
         renderBoard();
         updateStatus();
 
+        // Feedback Logic
+        const feedbackBtn = document.getElementById('feedback-btn');
+        const feedbackModal = document.getElementById('feedback-modal');
+        const sendFeedbackBtn = document.getElementById('send-feedback');
+        const feedbackText = document.getElementById('feedback-text');
+
+        feedbackBtn.addEventListener('click', () => {
+            feedbackModal.classList.toggle('show');
+            if (feedbackModal.classList.contains('show')) feedbackText.focus();
+        });
+
+        sendFeedbackBtn.addEventListener('click', () => {
+            const kritik = feedbackText.value.trim();
+            if (!kritik) {
+                alert('Please write your feedback first.');
+                return;
+            }
+
+            // Show loading state
+            sendFeedbackBtn.disabled = true;
+            sendFeedbackBtn.textContent = 'Mengirim... ⌛';
+            sendFeedbackBtn.style.opacity = '0.7';
+
+            // Send via EmailJS
+            const templateParams = {
+                to_email: 'zuumar54@gmail.com',
+                message: kritik,
+                subject: 'Kritik & Saran Chess Supreme'
+            };
+
+            emailjs.send('service_y55heiy', 'template_fy3hw9l', templateParams)
+                .then(function (response) {
+                    console.log('SUCCESS!', response.status, response.text);
+                    alert('Success! Your feedback has been sent directly to Zuumar. Thank you! 🙏');
+                    feedbackText.value = '';
+                    feedbackModal.classList.remove('show');
+                }, function (error) {
+                    console.log('FAILED...', error);
+                    // Fallback to mailto if EmailJS is not configured yet
+                    const subject = encodeURIComponent("Kritik & Saran Chess Supreme");
+                    const body = encodeURIComponent(kritik);
+                    window.location.href = `mailto:zuumar54@gmail.com?subject=${subject}&body=${body}`;
+
+                    feedbackText.value = '';
+                    feedbackModal.classList.remove('show');
+                })
+                .finally(() => {
+                    sendFeedbackBtn.disabled = false;
+                    sendFeedbackBtn.textContent = 'Kirim Sekarang';
+                    sendFeedbackBtn.style.opacity = '1';
+                });
+        });
+
+        // Close modal when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!feedbackBtn.contains(e.target) && !feedbackModal.contains(e.target)) {
+                feedbackModal.classList.remove('show');
+            }
+        });
+
         // Particles Generation
         function createParticles() {
             const container = document.getElementById('particles');
-            const symbols = ['♔', '♕', '♚', '♛'];
-            const count = 25;
+            const chessSymbols = ['♔', '♕', '♚', '♛'];
+            const specialSymbols = [
+                { char: '💎', type: 'diamond' },
+                { char: '✨', type: 'gold' },
+                { char: '💰', type: 'gold' }
+            ];
+            const count = 35; // Increased count for better effect
+
             for (let i = 0; i < count; i++) {
                 const p = document.createElement('div');
-                p.className = 'particle';
-                p.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                const isSpecial = Math.random() > 0.6;
+
+                if (isSpecial) {
+                    const sym = specialSymbols[Math.floor(Math.random() * specialSymbols.length)];
+                    p.textContent = sym.char;
+                    p.className = `particle ${sym.type}`;
+                } else {
+                    p.textContent = chessSymbols[Math.floor(Math.random() * chessSymbols.length)];
+                    p.className = 'particle chess';
+                }
 
                 const size = Math.random() * 15 + 15;
                 const left = Math.random() * 100;
                 const top = Math.random() * 100;
-                const duration = Math.random() * 15 + 15;
-                const delay = Math.random() * -30;
+                const duration = Math.random() * 20 + 20; // Slower drift for more elegance
+                const delay = Math.random() * -40;
 
                 p.style.fontSize = `${size}px`;
                 p.style.left = `${left}%`;
